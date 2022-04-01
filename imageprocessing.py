@@ -325,20 +325,70 @@ fig.add_subplot(2,2,4), plt.imshow(laplacian, cmap="gray"), plt.axis("off"), plt
 
 #%% Histogram - Görüntüdeki renk dağılımını gösterir.
 
+import cv2 
+import matplotlib.pyplot as plt
+import numpy as np
  
+img = cv2.imread("images/red_blue.png")
+img_vis = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
+fig = plt.figure(figsize=(12,12))
+fig_X= 4
+fig_Y= 2
 
+fig.add_subplot(fig_X, fig_Y, 1), plt.imshow(img_vis), plt.title("Original Image")
 
+print(img.shape)
 
+img_hist = cv2.calcHist([img], channels= [0], mask= None, histSize = [256], ranges= [0,256])
+print(img_hist.shape)
+fig.add_subplot(fig_X, fig_Y, 2), plt.plot(img_hist), plt.title("Hist Image")
 
+color = ("b","g","r")
+fig.add_subplot(fig_X, fig_Y, 3)
+for i,c in enumerate(color):
+    hist = cv2.calcHist([img], channels=[i], mask=None, histSize=[256], ranges=[0,256])
+    plt.plot(hist,color=c)
 
+#####
 
+golden_gate = cv2.imread("images/golden_gate.jpg")
+golden_gate_vis = cv2.cvtColor(golden_gate, cv2.COLOR_BGR2RGB)
+fig.add_subplot(fig_X, fig_Y, 4), plt.imshow(golden_gate_vis), plt.title("Golden Gate Image")
 
+print(golden_gate.shape)
 
+mask = np.zeros(golden_gate.shape[:2], np.uint8) 
+fig.add_subplot(fig_X, fig_Y,5), plt.imshow(mask, cmap="gray"), plt.title("Mask")
 
+mask[500:800, 200:500] = 255
+fig.add_subplot(fig_X, fig_Y,6), plt.imshow(mask, cmap="gray"), plt.title("Masked Region")
 
+masked_img_vis = cv2.bitwise_and(golden_gate_vis, golden_gate_vis, mask=mask)
+fig.add_subplot(fig_X, fig_Y,7), plt.imshow(masked_img_vis, cmap="gray"), plt.title("Masked Image")
 
+masked_img = cv2.bitwise_and(golden_gate, golden_gate, mask=mask)
+masked_img_hist = cv2.calcHist([golden_gate], channels= [2], mask= mask, histSize = [256], ranges= [0,256]) #channels degerlerini degistirerek farklı renkk hist. dagılımlarını gorsellestirebilirsiniz.
+fig.add_subplot(fig_X, fig_Y, 8), plt.plot(masked_img_hist), plt.title("Hist Masked Image")
 
+### histogram eşitleme , karşıtlık artırma
+
+img = cv2.imread("images/lena_histogram.png", 0)
+
+fig2 = plt.figure(figsize=(10,10))
+fig2_X= 2
+fig2_Y= 2
+
+fig2.add_subplot(fig2_X, fig2_Y,1), plt.imshow(img, cmap="gray")
+
+img_hist = cv2.calcHist([img], channels= [0], mask= None, histSize = [256], ranges= [0,256])
+fig2.add_subplot(fig2_X, fig2_Y,2), plt.plot(img_hist)
+
+eq_hist = cv2.equalizeHist(img)
+fig2.add_subplot(fig2_X, fig2_Y,3), plt.imshow(eq_hist, cmap="gray")
+
+eq_img_hist = cv2.calcHist([eq_hist], channels= [0], mask= None, histSize = [256], ranges= [0,256])
+fig2.add_subplot(fig2_X, fig2_Y,4), plt.plot(eq_img_hist)
 
 
 
